@@ -1,12 +1,13 @@
 package io.github.baeyung.omr_processor.processors;
 
+import io.github.baeyung.omr_processor.models.File;
 import io.github.baeyung.omr_processor.models.Invoice;
 import io.github.baeyung.omr_processor.processors.ocr.OCRService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,13 +20,10 @@ public class OMRService {
         this.aiService = aiService;
     }
 
-    public List<Invoice> processOMRImages(List<MultipartFile> images) {
-
-        if (images == null || images.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Invoice> invoices = new ArrayList<>();
+    public byte[] processOMRImages(List<MultipartFile> images) {
+        List<File> files = new ArrayList<>();
+        int counter = 1;
+        String finalText = "";
 
         for (MultipartFile image : images) {
             try {
@@ -37,16 +35,53 @@ public class OMRService {
 
                 Invoice invoice = aiService.fromOCRCreateInvoice(ocrText);
 
-                if (invoice != null) {
-                    invoices.add(invoice);
-                }
+                String fileName = FileProcessor.getNewFileName(
+                        counter,
+                        "FEB"
+                );
 
+                finalText = finalText
+                        .concat("\n")
+                        .concat(fileName.split("\\.")[0])
+                        .concat("\t")
+                        .concat(invoice.getInvoiceDate())
+                        .concat("\t")
+                        .concat(invoice.getTotalNet().toString())
+                        .concat("\t")
+                        .concat("0")
+                        .concat("\t")
+                        .concat("0")
+                        .concat("\t")
+                        .concat("\"\"")
+                        .concat("\t")
+                        .concat("\"\"");
+                // add concat for ai reason
+
+                files.add(
+                        new File(
+                                fileName + FileProcessor.getFileExt(image.getContentType()),
+                                image.getBytes()
+                        )
+                );
+
+                counter++;
             } catch (Exception e) {
-                // log properly instead of failing entire batch
                 System.out.println(e.getMessage());
             }
         }
 
-        return invoices;
+        files.add(
+                new File(
+                        "excel_text.txt",
+                        finalText.getBytes(StandardCharsets.UTF_8)
+                )
+        );
+
+        try {
+            return FileProcessor.zipAllFiles(files);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }

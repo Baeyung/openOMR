@@ -132,6 +132,8 @@ public class AIService {
                                         Do not calculate missing totals.
                                         Do not infer values not explicitly written.
                                         
+                                        Keep the date in format of dd/mm/yyyy
+                                        
                                         OCR TEXT:
                                         
                                         """ + ocrText,
