@@ -1,6 +1,7 @@
 package io.github.baeyung.omr_processor.processors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.api.client.util.Value;
 import io.github.baeyung.omr_processor.models.Invoice;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -142,6 +143,7 @@ public class AIService {
                 .getText();
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
 
         try {
             return mapper.readValue(llmResponse, Invoice.class);
