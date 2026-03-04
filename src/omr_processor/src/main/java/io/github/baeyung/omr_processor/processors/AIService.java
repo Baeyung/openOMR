@@ -17,7 +17,7 @@ public class AIService {
     @Value(value = "${spring.ai.openai.chat.options.model}")
     private String globalConfiguredChatModel;
 
-    private static String OMR_JSON_SCHEMA = """
+    private final static String OMR_JSON_SCHEMA = """
             {
               "type": "object",
               "properties": {
@@ -122,21 +122,21 @@ public class AIService {
                 .build();
 
         String llmResponse = chatModel.call(
-                new Prompt(
-                        """
-                                Extract structured invoice data from the following OCR text.
-                                Return only valid JSON matching the schema.
-                                
-                                If a value is not present in the OCR text, return null.
-                                Do not calculate missing totals.
-                                Do not infer values not explicitly written.
-                                
-                                OCR TEXT:
-                                
-                                """ + ocrText,
-                        options
+                        new Prompt(
+                                """
+                                        Extract structured invoice data from the following OCR text.
+                                        Return only valid JSON matching the schema.
+                                        
+                                        If a value is not present in the OCR text, return null.
+                                        Do not calculate missing totals.
+                                        Do not infer values not explicitly written.
+                                        
+                                        OCR TEXT:
+                                        
+                                        """ + ocrText,
+                                options
+                        )
                 )
-        )
                 .getResult()
                 .getOutput()
                 .getText();
@@ -145,8 +145,7 @@ public class AIService {
 
         try {
             return mapper.readValue(llmResponse, Invoice.class);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(llmResponse);
             throw new RuntimeException(e);
         }
