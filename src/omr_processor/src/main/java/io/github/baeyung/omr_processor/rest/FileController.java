@@ -1,6 +1,8 @@
 package io.github.baeyung.omr_processor.rest;
 
-import io.github.baeyung.omr_processor.models.Invoice;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.baeyung.omr_processor.models.Employee;
 import io.github.baeyung.omr_processor.processors.OMRService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,23 +34,24 @@ public class FileController
             value = "/omr/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public ResponseEntity<byte[]> processOMRImages(@RequestParam("files") List<MultipartFile> files)
+    public ResponseEntity<byte[]> processOMRImages(
+            @RequestPart("files") List<MultipartFile> files,
+            @RequestPart("metadata") String metaData
+    ) throws JsonProcessingException
     {
 
-        if (files.isEmpty())
+        if (files.isEmpty() || metaData == null)
         {
-            return ResponseEntity
-                    .badRequest()
-                    .build();
+            return ResponseEntity.badRequest().build();
         }
 
-        byte[] zippedFile = this.omrService.processOMRImages(files);
+        Employee employee = new ObjectMapper().readValue(metaData, Employee.class);
+
+        byte[] zippedFile = this.omrService.processOMRData(files, employee);
 
         if (zippedFile == null)
         {
-            ResponseEntity
-                    .internalServerError()
-                    .build();
+            ResponseEntity.internalServerError().build();
         }
 
         // Prepare response

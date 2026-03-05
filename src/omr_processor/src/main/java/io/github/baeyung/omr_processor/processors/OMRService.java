@@ -1,12 +1,13 @@
 package io.github.baeyung.omr_processor.processors;
 
+import io.github.baeyung.omr_processor.models.Employee;
 import io.github.baeyung.omr_processor.models.File;
 import io.github.baeyung.omr_processor.models.Invoice;
 import io.github.baeyung.omr_processor.processors.ocr.OCRService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class OMRService
         this.aiService = aiService;
     }
 
-    public byte[] processOMRImages(List<MultipartFile> images)
+    public byte[] processOMRData(List<MultipartFile> images, Employee employee)
     {
         List<File> files = new ArrayList<>();
         int counter = 1;
@@ -43,8 +44,24 @@ public class OMRService
 
                 String fileName = FileProcessor.getNewFileName(
                         counter,
-                        "FEB"
+                        employee.getForMonth()
                 );
+
+                finalText = finalText
+                        .concat(fileName.split("\\.")[0])
+                        .concat("~")
+                        .concat(invoice.getInvoiceDate())
+                        .concat("~")
+                        .concat(invoice.getTotalNet().toString())
+                        .concat("~")
+                        .concat("0")
+                        .concat("~")
+                        .concat("0")
+                        .concat("~")
+                        .concat("~")
+                        .concat("~")
+                        .concat("BP")// will add logic to find sickness using AI
+                        .concat("\n");
 
                 files.add(
                         new File(
@@ -63,8 +80,10 @@ public class OMRService
 
         files.add(
                 new File(
-                        "excel_text.txt",
-                        finalText.getBytes(StandardCharsets.UTF_8)
+                        FileProcessor.getNewFileName(-1, employee.getForMonth()) +
+                        "_" + (LocalDate.now().getYear() - 2000) +
+                        FileProcessor.getFileExt("excel/xlsx"),
+                        FileProcessor.fillOMRFormForTheEmployee(finalText, employee)
                 )
         );
 

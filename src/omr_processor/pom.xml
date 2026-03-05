@@ -62,6 +62,13 @@
             <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.5.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -82,8 +89,8 @@
                             <version>1.18.42</version>
                         </path>
                     </annotationProcessorPaths>
-                  <source>15</source>
-                  <target>15</target>
+                  <source>25</source>
+                  <target>25</target>
                 </configuration>
             </plugin>
         </plugins>
