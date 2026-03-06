@@ -25,7 +25,7 @@ export class LayoutService {
         preset: 'Aura',
         primary: 'indigo',
         surface: 'stone',
-        darkTheme: true,
+        darkTheme: false,
         menuMode: 'static',
     });
 
