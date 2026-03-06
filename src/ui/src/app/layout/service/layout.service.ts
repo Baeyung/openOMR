@@ -23,14 +23,14 @@ interface LayoutState {
 export class LayoutService {
     layoutConfig = signal<LayoutConfig>({
         preset: 'Aura',
-        primary: 'emerald',
-        surface: null,
-        darkTheme: false,
+        primary: 'indigo',
+        surface: 'stone',
+        darkTheme: true,
         menuMode: 'static',
     });
 
     layoutState = signal<LayoutState>({
-        staticMenuDesktopInactive: false,
+        staticMenuDesktopInactive: true,
         overlayMenuActive: false,
         configSidebarVisible: false,
         mobileMenuActive: false,
