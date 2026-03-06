@@ -3,6 +3,7 @@ package io.github.baeyung.omr_processor.processors;
 import io.github.baeyung.omr_processor.models.Employee;
 import io.github.baeyung.omr_processor.models.File;
 import io.github.baeyung.omr_processor.models.Invoice;
+import io.github.baeyung.omr_processor.models.InvoiceItem;
 import io.github.baeyung.omr_processor.processors.ocr.OCRService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OMRService
@@ -42,6 +44,14 @@ public class OMRService
 
                 Invoice invoice = aiService.fromOCRCreateInvoice(ocrText);
 
+                String sickness = aiService.fromMedicinesFindTheSicknessItTreats(
+                        invoice
+                                .getItems()
+                                .stream()
+                                .map(InvoiceItem::getProductName)
+                                .collect(Collectors.joining(","))
+                );
+
                 String fileName = FileProcessor.getNewFileName(
                         counter,
                         employee.getForMonth()
@@ -53,14 +63,8 @@ public class OMRService
                         .concat(invoice.getInvoiceDate())
                         .concat("~")
                         .concat(invoice.getTotalNet().toString())
-                        .concat("~")
-                        .concat("0")
-                        .concat("~")
-                        .concat("0")
-                        .concat("~")
-                        .concat("~")
-                        .concat("~")
-                        .concat("BP")// will add logic to find sickness using AI
+                        .concat("~0~0~~~")
+                        .concat(sickness)
                         .concat("\n");
 
                 files.add(

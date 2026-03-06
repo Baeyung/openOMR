@@ -99,13 +99,12 @@ public class AIService
         return chatModel.call(message);
     }
 
-    public String chatWithOptions(String message, String model)
+    public String chatWithOptions(String message, String model, Double temperature)
     {
         ChatOptions options = OpenAiChatOptions
                 .builder()
-                .model(model)  // Override model dynamically
-                .temperature(0.8)
-                .maxTokens(2000)
+                .model(model)
+                .temperature(temperature)
                 .build();
 
         return chatModel
@@ -164,5 +163,29 @@ public class AIService
             System.out.println(llmResponse);
             throw new RuntimeException(e);
         }
+    }
+
+    public String fromMedicinesFindTheSicknessItTreats(String medicineNames) {
+        String prompt = """
+                You are a medical classification assistant.
+                
+                Your task is to map medicine names to the common condition or disease they are used to treat.
+                
+                Rules:
+                - Return ONLY the condition name.
+                - Use short, commonly understood medical terms.
+                - Do not explain anything.
+                - If multiple medicines are given, return the conditions in the same order as the medicines.
+                - Output should be comma-separated.
+                
+                Example:
+                Input: concor, panadol, glucofage
+                Output: BP, Painkiller, Insulin control
+                
+                Now classify the following medicines:
+                
+                """ + medicineNames;
+
+        return chatWithOptions(prompt, globalConfiguredChatModel, 0.0);
     }
 }
