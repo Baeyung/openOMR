@@ -4,13 +4,13 @@ import { Component } from '@angular/core';
     standalone: true,
     selector: 'app-footer',
     template: `<div class="layout-footer">
-        SAKAI by
+        OpenFF by
         <a
-            href="https://primeng.org"
+            href="https://github.com/Baeyung/openOMR"
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary font-bold hover:underline"
-            >PrimeNG</a
+            >Baeyung</a
         >
     </div>`,
 })

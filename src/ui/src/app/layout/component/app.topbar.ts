@@ -51,7 +51,7 @@ import { LayoutService } from '@/app/layout/service/layout.service';
                         />
                     </g>
                 </svg>
-                <span>SAKAI</span>
+                <span>OpenFF</span>
             </a>
         </div>
 
