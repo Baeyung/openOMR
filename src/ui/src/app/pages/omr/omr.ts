@@ -9,7 +9,7 @@ import { FileuploadTemplateDemo } from './file-upload';
                 <meta-data />
             </div>
             <div class="col-span-4 lg:col-span-6 xl:col-span-5">
-                <div class="card h-full !p-0">
+                <div class="card h-full">
                     <fileupload />
                 </div>
             </div>
