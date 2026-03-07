@@ -14,7 +14,7 @@ interface UploadedFile {
 @Component({
     selector: 'fileupload',
     template: `
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-6 h-full">
             <!-- Header Section -->
             <div class="flex items-center gap-3 justify-between">
                 <button
@@ -100,7 +100,7 @@ interface UploadedFile {
                     </div>
                 </div>
             } @else {
-                <div class="py-8 text-center text-gray-500">
+                <div class="py-8 text-center text-gray-500 h-full flex flex-col items-center justify-center gap-3">
                     <i class="pi pi-inbox mb-3 block text-4xl opacity-50"></i>
                     <p class="text-sm">No files selected. Click Choose to upload images.</p>
                 </div>
