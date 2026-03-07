@@ -14,35 +14,38 @@ interface UploadedFile {
 @Component({
     selector: 'fileupload',
     template: `
-        <div class="flex flex-col gap-6 h-full">
+        <div class="flex h-full flex-col gap-6">
             <!-- Header Section -->
-            <div class="flex items-center gap-3 justify-between">
-                <button
-                    class="!border-blue-500 !bg-blue-500 hover:!bg-blue-600"
-                    (click)="fileInput.click()"
-                    pButton
-                    type="button"
-                    icon="pi pi-plus"
-                    label="Choose"
-                ></button>
-                @if (files().length !== 0) {
+            @if (files().length > 0) {
+                <div class="flex items-center justify-between gap-3">
                     <button
-                        (click)="clearAll()"
+                        class="!border-blue-500 !bg-blue-500 hover:!bg-blue-600"
+                        (click)="fileInput.click()"
                         pButton
                         type="button"
-                        label="Clear All"
-                        severity="secondary"
+                        icon="pi pi-plus"
+                        label="Add More"
                     ></button>
-                }
-                <input
-                    #fileInput
-                    (change)="onFileSelected($event)"
-                    type="file"
-                    hidden
-                    multiple
-                    accept="image/*"
-                />
-            </div>
+                    @if (files().length !== 0) {
+                        <button
+                            (click)="clearAll()"
+                            pButton
+                            type="button"
+                            label="Clear All"
+                            severity="secondary"
+                        ></button>
+                    }
+                </div>
+            }
+
+            <input
+                #fileInput
+                (change)="onFileSelected($event)"
+                type="file"
+                hidden
+                multiple
+                accept="image/*"
+            />
 
             <!-- Validation Error Message -->
             @if (validationError()) {
@@ -60,18 +63,18 @@ interface UploadedFile {
                     >
                         <!-- File Preview Thumbnail -->
                         <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                            <img
-                                class="h-full w-full object-cover"
-                                *ngIf="file.preview"
-                                [src]="file.preview"
-                                [alt]="file.name"
-                            />
-                            <div
-                                class="flex h-full w-full items-center justify-center text-gray-400"
-                                *ngIf="!file.preview"
-                            >
-                                <i class="pi pi-image text-2xl"></i>
-                            </div>
+                            @if (file.preview) {
+                                <img
+                                    class="h-full w-full object-cover"
+                                    [src]="file.preview"
+                                    [alt]="file.name"
+                                />
+                            }
+                            @if (!file.preview) {
+                                <div class="flex h-full w-full items-center justify-center text-gray-400">
+                                    <i class="pi pi-image text-2xl"></i>
+                                </div>
+                            }
                         </div>
 
                         <!-- File Information -->
@@ -100,9 +103,27 @@ interface UploadedFile {
                     </div>
                 </div>
             } @else {
-                <div class="py-8 text-center text-gray-500 h-full flex flex-col items-center justify-center gap-3">
-                    <i class="pi pi-inbox mb-3 block text-4xl opacity-50"></i>
-                    <p class="text-sm">No files selected. Click Choose to upload images.</p>
+                <div
+                    class="flex h-full cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:!border-blue-500 hover:!bg-blue-50"
+                    [ngClass]="isDragOver() ? 'border-blue-500 bg-blue-50' : 'border-gray-300 text-gray-500'"
+                    (click)="fileInput.click()"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave()"
+                    (drop)="onDrop($event)"
+                >
+                    <i
+                        class="pi pi-inbox mb-3 block !text-4xl"
+                        [ngClass]="isDragOver() ? 'text-blue-500' : 'text-gray-400 opacity-50'"
+                    ></i>
+                    <div>
+                        <p class="text-lg font-medium">
+                            @if (isDragOver()) {
+                                Drop files here
+                            } @else {
+                                Drag & drop or click to upload images.
+                            }
+                        </p>
+                    </div>
                 </div>
             }
         </div>
@@ -117,6 +138,7 @@ export class FileuploadTemplateDemo {
     files = signal<UploadedFile[]>([]);
     validationError = signal<string | null>(null);
     isProcessing = signal(false);
+    isDragOver = signal(false);
 
     readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
     readonly MAX_FILES = 10;
@@ -184,6 +206,33 @@ export class FileuploadTemplateDemo {
 
         if (hasError) {
             this.resetFileInput();
+        }
+    }
+
+    onDragOver(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isDragOver.set(true);
+    }
+
+    onDragLeave(): void {
+        this.isDragOver.set(false);
+    }
+
+    onDrop(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isDragOver.set(false);
+
+        const droppedFiles = event.dataTransfer?.files;
+        if (droppedFiles) {
+            // Create a synthetic event object to reuse onFileSelected logic
+            const syntheticEvent = {
+                target: {
+                    files: droppedFiles
+                }
+            } as unknown as Event;
+            this.onFileSelected(syntheticEvent);
         }
     }
 
