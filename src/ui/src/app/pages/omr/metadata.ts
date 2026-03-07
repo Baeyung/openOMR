@@ -18,7 +18,7 @@ export interface InfoMetaData {
 @Component({
     selector: 'meta-data',
     template: `
-        <div class="card flex flex-col items-start justify-center gap-6">
+        <div class="card flex flex-col items-start justify-center gap-6 h-[30rem]">
             <div class="flex gap-4 items-center">
                 <span class="text-xl pi pi-user"></span>
                 <div class="flex">

@@ -56,51 +56,52 @@ interface UploadedFile {
 
             <!-- Files List Section -->
             @if (files().length > 0) {
-                <div class="flex flex-col gap-3">
-                    <div
-                        class="flex items-center gap-4 rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-sm"
-                        *ngFor="let file of files()"
-                    >
-                        <!-- File Preview Thumbnail -->
-                        <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                            @if (file.preview) {
-                                <img
-                                    class="h-full w-full object-cover"
-                                    [src]="file.preview"
-                                    [alt]="file.name"
-                                />
-                            }
-                            @if (!file.preview) {
-                                <div class="flex h-full w-full items-center justify-center text-gray-400">
-                                    <i class="pi pi-image text-2xl"></i>
-                                </div>
-                            }
-                        </div>
-
-                        <!-- File Information -->
-                        <div class="min-w-0 flex-1">
-                            <p class="truncate text-sm font-medium text-gray-900">{{ file.name }}</p>
-                            <p class="mt-1 text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
-                        </div>
-
-                        <!-- Status Badge -->
-                        <span
-                            class="rounded px-3 py-1 text-xs font-medium whitespace-nowrap"
-                            [ngClass]="getStatusClass(file.status)"
+                <div class="flex flex-col gap-3 overflow-y-auto">
+                    @for (file of files(); track $index) {
+                        <div
+                            class="flex items-center gap-4 rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-sm"
                         >
-                            {{ file.status }}
-                        </span>
-
-                        <!-- Delete Button -->
-                        <button
-                            class="flex-shrink-0 text-red-500 transition-colors hover:text-red-700"
-                            (click)="removeFile(file.id)"
-                            type="button"
-                            title="Delete file"
-                        >
-                            <i class="pi pi-times text-lg"></i>
-                        </button>
-                    </div>
+                            <!-- File Preview Thumbnail -->
+                            <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded bg-gray-100">
+                                @if (file.preview) {
+                                    <img
+                                        class="h-full w-full object-cover"
+                                        [src]="file.preview"
+                                        [alt]="file.name"
+                                    />
+                                }
+                                @if (!file.preview) {
+                                    <div class="flex h-full w-full items-center justify-center text-gray-400">
+                                        <i class="pi pi-image text-2xl"></i>
+                                    </div>
+                                }
+                            </div>
+    
+                            <!-- File Information -->
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-sm font-medium text-gray-900">{{ file.name }}</p>
+                                <p class="mt-1 text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
+                            </div>
+    
+                            <!-- Status Badge -->
+                            <span
+                                class="rounded px-3 py-1 text-xs font-medium whitespace-nowrap"
+                                [ngClass]="getStatusClass(file.status)"
+                            >
+                                {{ file.status }}
+                            </span>
+    
+                            <!-- Delete Button -->
+                            <button
+                                class="flex-shrink-0 text-red-500 transition-colors hover:text-red-700"
+                                (click)="removeFile(file.id)"
+                                type="button"
+                                title="Delete file"
+                            >
+                                <i class="pi pi-times text-lg"></i>
+                            </button>
+                        </div>
+                    }
                 </div>
             } @else {
                 <div
